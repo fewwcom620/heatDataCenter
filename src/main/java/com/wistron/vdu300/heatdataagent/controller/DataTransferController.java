@@ -58,7 +58,7 @@ public class DataTransferController {
 
         var testDevice = Usb.findDevice(vendorId, productId).orElseThrow();
         testDevice.open();
-        var transfer = new UsbControlTransfer(UsbRequestType.VENDOR, UsbRecipient.INTERFACE, 0x01, 1234, 1);
+        var transfer = new UsbControlTransfer(UsbRequestType.VENDOR, UsbRecipient.DEVICE, 0x01, 1234, 1);
         testDevice.controlTransferOut(transfer, null);
         testDevice.close();
 
