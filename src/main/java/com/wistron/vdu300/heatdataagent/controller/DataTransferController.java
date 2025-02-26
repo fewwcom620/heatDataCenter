@@ -49,17 +49,12 @@ public class DataTransferController {
         return results;
     }
 
-    @GetMapping("/message/{vendor}/{product}/{message}")
-    public Map controlDevice(@PathVariable String vendor,
-                             @PathVariable String product,
-                             @PathVariable String message) {
+    @GetMapping("/message/{message}")
+    public Map controlDevice(@PathVariable String message) {
         HashMap<String, Object> results = new HashMap<String, Object>();
 
-//        int vendorId = 0x05ac;
-//        int productId = 0x12a8;
-
-        int vendorId = Integer.parseInt(vendor);
-        int productId = Integer.parseInt(product);
+        int vendorId = 0x0957;
+        int productId = 0x0507;
 
         var testDevice = Usb.findDevice(vendorId, productId).orElseThrow();
         testDevice.open();
