@@ -1,7 +1,9 @@
 package com.wistron.vdu300.heatdataagent.controller;
 
 import com.fazecast.jSerialComm.SerialPort;
+import net.codecrete.usb.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -23,19 +25,47 @@ public class DataTransferController {
     @GetMapping("/ports")
     public Map ports() {
         HashMap<String, Object> results = new HashMap<String, Object>();
-
-        SerialPort[] commPorts = SerialPort.getCommPorts();
-
-        for (SerialPort commPort : commPorts) {
-
+        for (UsbDevice device : Usb.getDevices()) {
+            System.out.println("device.getSerialNumber() = " + device.getSerialNumber());
+            System.out.println("device.getManufacturer() = " + device.getManufacturer());
+            System.out.println("device.getProduct() = " + device.getProduct());
+            System.out.println("device = " + device.toString());
         }
 
-        List<String> names = Arrays.stream(commPorts).map(SerialPort::getDescriptivePortName).toList();
+        List<byte[]> devices = Usb.getDevices().stream().map(UsbDevice::getDeviceDescriptor).toList();
 
-        List<String> descriptions = Arrays.stream(commPorts).map(SerialPort::toString).toList();
+        results.put("description", devices);
 
-        results.put("portName", names);
-        results.put("description", descriptions);
+        return results;
+    }
+
+    @GetMapping("/device")
+    public Map deviceTest() {
+        HashMap<String, Object> results = new HashMap<String, Object>();
+
+        Usb.setOnDeviceConnected(usbDevice -> System.out.println("connected = " + usbDevice));
+        Usb.setOnDeviceDisconnected(usbDevice -> System.out.println("disconnected = " + usbDevice));
+
+        return results;
+    }
+
+    @GetMapping("/message/{vendor}/{product}/{message}")
+    public Map controlDevice(@PathVariable String vendor,
+                             @PathVariable String product,
+                             @PathVariable String message) {
+        HashMap<String, Object> results = new HashMap<String, Object>();
+
+//        int vendorId = 0x05ac;
+//        int productId = 0x12a8;
+
+        int vendorId = Integer.parseInt(vendor);
+        int productId = Integer.parseInt(product);
+
+        var testDevice = Usb.findDevice(vendorId, productId).orElseThrow();
+        testDevice.open();
+        var transfer = new UsbControlTransfer(UsbRequestType.VENDOR, UsbRecipient.INTERFACE, 0x01, 1234, 1);
+        testDevice.controlTransferOut(transfer, null);
+        testDevice.close();
 
         return results;
     }

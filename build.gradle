@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(23)
     }
 }
 
@@ -24,6 +24,17 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation 'com.fazecast:jSerialComm:[2.0.0,3.0.0)'
+
+    // https://mvnrepository.com/artifact/org.rxtx/rxtxcomm
+//    implementation 'org.rxtx:rxtxcomm:1.0'
+
+    // https://mvnrepository.com/artifact/cn.qqhxj.rxtx/spring-boot-starter-rxtx
+//    implementation 'cn.qqhxj.rxtx:spring-boot-starter-rxtx:3.1.0-R ELEASE'
+
+    // https://mvnrepository.com/artifact/net.codecrete.usb/java-does-usb
+    implementation 'net.codecrete.usb:java-does-usb:1.2.0'
+
+
 }
 
 tasks.named('test') {
